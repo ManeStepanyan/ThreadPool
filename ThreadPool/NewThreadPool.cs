@@ -67,7 +67,7 @@ namespace ThreadPool
                         autoResetEvent.WaitOne();
                     }
                 }
-
+                autoResetEvent.Close();
                 isDisposed = true;
             }
         }
@@ -89,9 +89,11 @@ namespace ThreadPool
 
                     if (tasks.Count() > 0 && threads.Count != 0)
                     {
-
-                        task = tasks.Dequeue();
-                        threads.Dequeue();
+                        lock (locker)
+                        {
+                            task = tasks.Dequeue();
+                            threads.Dequeue();
+                        }
 
                         autoResetEvent.Set();
                         break;
